@@ -1,39 +1,32 @@
 import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
+from flask import Flask
+from threading import Thread
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHANNEL = "@murad_ai_vip"
-LINK = "https://t.me/murad_ai_vip"
+TOKEN = "8987342278:AAHiC6S30VBGJGPO2w14Fc2XcK7Cwci5IHs"
 
-async def check_sub(uid, ctx):
-    try:
-        m = await ctx.bot.get_chat_member(CHANNEL, uid)
-        return m.status in ['member','administrator','creator']
-    except:
-        return False
+app = Flask(__name__)
 
-async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    kb = [[InlineKeyboardButton("📢 اشترك في @murad_ai_vip", url=LINK)],
-          [InlineKeyboardButton("✅ تحقق من الاشتراك", callback_data="chk")]]
-    await update.message.reply_text(f"مرحبا يا {update.effective_user.first_name}! بوت ادوات مراد 🤖\n\n👇 اشترك اولا:", reply_markup=InlineKeyboardMarkup(kb))
+@app.route('/')
+def home():
+    return "Bot @murad_vip_2026_bot is Alive 24/7!"
 
-async def btn(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    q = update.callback_query
-    await q.answer()
-    if await check_sub(q.from_user.id, ctx):
-        kb = [[InlineKeyboardButton("🎨 مولد صور", callback_data="img")],
-              [InlineKeyboardButton("🌍 مترجم", callback_data="tr")],
-              [InlineKeyboardButton("✍️ كاتب محتوى", callback_data="wr")]]
-        await q.edit_message_text("✅ تم التفعيل! اختر:", reply_markup=InlineKeyboardMarkup(kb))
-    else:
-        await q.edit_message_text(f"❌ لم تشترك بعد!\n{LINK}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("✅ تحقق", callback_data="chk")]]))
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "هلا والله يا بطل! 🔥\n\n"
+        "بوت قناة مراد VIP شغال 24 ساعة ✅\n\n"
+        "من المكلا - حضرموت 🌍\n"
+        "موقعنا: murad-ai-hub-vip.netlify.app\n"
+        "مجتمعنا: @murad_ai_community"
+    )
 
-async def msg(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f"🤖 استلمت: {update.message.text}")
+def run_flask():
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
 
-app = Application.builder().token(BOT_TOKEN).build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CallbackQueryHandler(btn))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, msg))
-app.run_polling()
+if __name__ == '__main__':
+    Thread(target=run_flask, daemon=True).start()
+    application = Application.builder().token(TOKEN).build()
+    application.add_handler(CommandHandler("start", start))
+    print("Bot started 24/7...")
+    application.run_polling()
